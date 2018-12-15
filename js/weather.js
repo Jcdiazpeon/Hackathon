@@ -1,5 +1,7 @@
 function getCoordinates()
 {
+    const API_KEY = 'b0d48880090d49e9dcc76306507a83b6';
+
     let coordinates = [];
 
     // Fill coordinates
