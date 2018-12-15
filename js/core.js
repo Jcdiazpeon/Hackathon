@@ -21,26 +21,32 @@ let myOptions =
 
 // standard map
 let map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+route();
 
-let direction = new DirectionsService();
-let renderer = new DirectionsRenderer();
-
-direction.route(new DirectionRequest(
-    {
-        origin: LatLng | String | google.maps.Place,
+function route()
+{
+    let direction = new google.maps.DirectionsService();
+    let renderer = new google.maps.DirectionsRenderer();
+    let request = {
+        origin: new google.maps.LatLng(userLocation.latitude, userLocation.longitude),
         destination: "School",
         travelMode: Driving,
         provideRouteAlternatives: true,
         avoidFerries: true,
         avoidHighways: false,
         avoidTolls: false,
-    }
-),
-function(result, status)
+    };
+
+    direction.route(request, function(result, status)
     {
-        console.log(result);
+        if(status == "ok")
+        {
+            renderer.setDirections(result);
+        }
     }
 );
+}
+
 
 // heatmap layer
 let heatmap = new HeatmapOverlay(map, 
