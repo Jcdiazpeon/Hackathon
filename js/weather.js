@@ -1,59 +1,44 @@
 function getCoordinates(callback)
 {
-    const API_KEY = '25de511668987eb86006f9bbca2b2334';
-    let debug = false;
+    const API_KEY = '6633d2dd94cf272ff37b5aac59b3667c';
 
-    if(debug)
+    // Fill coordinates
+    $.getJSON('/data/counties.json', function(data)
     {
-        $.ajax({
-            url: '/data/weather.json',
-            dataType: 'jsonp',
-            success: function (data) {
-                callback(JSON.parse('data'));
-            }
-        });
-    }
-    else
-    {
-        // Fill coordinates
-        $.getJSON('/data/counties.json', function(data)
+        let coordinates = [];
+
+        let url = `https://api.darksky.net/forecast/${API_KEY}`;
+
+        let lat, lon;
+
+        let gotten = 0;
+
+        for(let x = 0; x < data.length; x++)
         {
-            let coordinates = [];
-
-            let url = `https://api.darksky.net/forecast/${API_KEY}`;
-
-            let lat, lon;
-
-            let gotten = 0;
-
-            for(let x = 0; x < data.length; x++)
+            $.ajax(
             {
-                $.ajax(
+                method: 'GET',
+                url: `${url}/${data[x].latitude},${data[x].longitude}?units=si`,
+                dataType: 'jsonp',
+                data: {
+                    format: "json"
+                },
+                success: (res) =>
                 {
-                    method: 'GET',
-                    url: `${url}/${data[x].latitude},${data[x].longitude}`,
-                    dataType: 'jsonp',
-                    data: {
-                        format: "json"
-                    },
-                    success: (res) =>
+                    lat = data[x].latitude;
+                    lon = data[x].longitude;
+
+                    coordinates.push(new Coordinate(lat, lon, res));
+
+                    gotten++;
+                    if(gotten === data.length)
                     {
-                        lat = data[x].latitude;
-                        lon = data[x].longitude;
-
-                        coordinates.push(new Coordinate(lat, lon, res));
-                        // ex: coordinates.push(new Coordinate(lat, lon, weather data extracted from res));
-
-                        gotten++;
-                        if(gotten === data.length)
-                        {
-                            callback(coordinates);
-                        }
+                        callback(coordinates);
                     }
-                });
-            }
-        });
-    }
+                }
+            });
+        }
+    });
 }
 
 class Coordinate

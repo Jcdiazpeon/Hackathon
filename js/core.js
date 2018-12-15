@@ -14,29 +14,6 @@ else
     alert('You are using a browser that is 10 years out of date. Stop it now.');
 }
 
-function route()
-{
-    let direction = new google.maps.DirectionsService();
-    let renderer = new google.maps.DirectionsRenderer();
-    let request = {
-        origin: new google.maps.LatLng(userLocation.latitude, userLocation.longitude),
-        destination: "School",
-        travelMode: "DRIVING",
-        provideRouteAlternatives: true,
-        avoidFerries: true,
-        avoidHighways: false,
-        avoidTolls: false,
-    };
-
-    direction.route(request, function(result, status)
-    {
-        if(status == "ok")
-        {
-            renderer.setDirections(result);
-        }
-    });
-}
-
 function run()
 {
     // standard map
@@ -45,8 +22,6 @@ function run()
         zoom: 5,
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
-    
-    route();
 
     // heatmap layer
     heatmap = new HeatmapOverlay(map, 
@@ -77,15 +52,17 @@ function run()
 
 function isDanger(data)
 {
-    if(data.precipType === "rain")
-    {
-        if(data.precipIntensity > 0.01)
-            return true;
-    }
-    else if(data.precipType === "snow")
-    {
+    if(data.precipitationType === "rain" && data.precipIntensity > 10)
+        return true;
+    else if(data.precipitationType === "snow" && data.precipIntensity > 4)
+        return true;
+    else if(data.precipitationType === 'sleet' || data.precipitationType === 'hail')
+        return true;
+    else if(data.windSpeed > 50)
+        return true;
+    else if(data.visibility < 6)
+        return true;
 
-    }
     return false;
 }
 
@@ -104,6 +81,8 @@ function fillHeatmap(options)
         dataToFill.data.push({lat: c.lat, lng: c.lon, count: 1});
     }
 
+    console.log(weatherCoordinates);
+
     for(let i = 0; i < weatherCoordinates.length; i++)
     {
         if(!options || options.danger)
@@ -113,60 +92,19 @@ function fillHeatmap(options)
         }
         else
         {
+            // https://darksky.net/dev/docs
+
             let c = weatherCoordinates[i];
-
-            /*
-apparentTemperature: 40.11
-cloudCover: 0.24
-dewPoint: 36.94
-humidity: 0.78
-icon: "clear-day"
-nearestStormDistance: 0
-ozone: 294.56
-precipIntensity: 0
-precipProbability: 0
-pressure: 1020.73
-summary: "Clear"
-temperature: 43.42
-time: 1544903566
-uvIndex: 0
-visibility: 10
-windBearing: 47
-windGust: 6.54
-windSpeed: 5.56
-
-apparentTemperature: 44.88
-cloudCover: 0.94
-dewPoint: 45.17
-humidity: 0.92
-icon: "rain"
-nearestStormDistance: 0
-ozone: 298.42
-precipIntensity: 0.0723
-precipIntensityError: 0.014
-precipProbability: 1
-precipType: "rain"
-pressure: 1016.47
-summary: "Rain"
-temperature: 47.5
-time: 1544903564
-uvIndex: 1
-visibility: 5.56
-windBearing: 63
-windGust: 8.34
-windSpeed: 5.67
-
-            */
 
             if(options.precipitationType && !(c.data.currently.summary.toLowerCase().includes(options.precipitationType)))
                 continue;
-            if(options.precipAmount && !(options.precipAmount <= c.data.currently.precipAmount))
+            if(options.precipIntensity && !(options.precipIntensity <= c.data.currently.precipIntensity))
                 continue;
             if(options.windSpeed && !(options.windSpeed <= c.data.currently.windSpeed))
                 continue;
-            if(options.visibility && !(options.visibilityPercent <= c.data.currently.visibility))
+            if(options.visibility && !(options.visibility >= c.data.currently.visibility))
                 continue;
-            if(options.humidity && !(options.humidityPercent <= c.data.currently.humidity))
+            if(options.humidityPercent && !(options.humidityPercent <= c.data.currently.humidity))
                 continue;
             
             console.log(c.data);
@@ -181,33 +119,20 @@ $("#weatherDataForm").submit(e =>
 {
     e.preventDefault();
 
-/*
-<label>Wind Speed (km/h)</label>
-                    <input type="number" id="windSpeed" />
-
-                    <label>Visibility %</label>
-                    <input type="number" id="visibilityPercent" />
-
-                    <label>Humidity %</label>
-                    <input type="number" id="humidityPercent" />
-*/
-
     let precip = $('#precip').val();
-    let precipAmt = $('#precipPercent').val();
+    let precipAmt = $('#precipIntensity').val();
     let windSpeed = $('#windSpeed').val();
-    let visibilityPercent = $('#visibilityPercent').val();
+    let visibility = $('#visibility').val();
     let humidityPercent = $('#humidityPercent').val();
     let danger = $('#danger').prop('checked');
-
-    console.log(precipAmt / 100)
 
     fillHeatmap(
         {
             precipitationType: precip.toLowerCase(),
-            precipAmount: precipAmt / 100,
+            precipIntensity: precipAmt,
             danger: danger,
             windSpeed: windSpeed,
-            visibilityPercent: visibilityPercent / 100,
+            visibility: visibility,
             humidityPercent: humidityPercent / 100
         });
 
