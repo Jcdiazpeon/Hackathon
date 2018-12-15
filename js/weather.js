@@ -1,14 +1,12 @@
-
-
-function getCoordinates()
+function getCoordinates(callback)
 {
     const API_KEY = '19f72ad7d0e5911653d8e37df08280d7';
 
-    let coordinates = [];
-
     // Fill coordinates
-    $.getJSON('file:///C:/Users/cl20copet/Documents/GitHub/Hackathon/data/counties.json', function(data)
+    $.getJSON('/data/counties.json', function(data)
     {
+        let coordinates = [];
+
         let url = `https://api.darksky.net/forecast/${API_KEY}`;
 
         let lat, lon;
@@ -23,31 +21,33 @@ function getCoordinates()
 ​
 4: Object { name: "Bedford County", latitude: 4.608, longitude: 39.99862 }
 */
-        
-        for(let x = 0; x < data.length; x++)
-        {
-            lat = data[x].latitude;
-            lon = data[x].longitude;
+        let gotten = 0;
 
+        for(let x = 0; x < data.length; x++)
+        {            
             $.ajax(
             {
                 method: 'GET',
-                url: `${url}/${lat},${lon}`,
+                url: `${url}/${data[x].latitude},${data[x].longitude}`,
                 dataType: 'jsonp',
                 data: {
                     format: "json"
                 },
                 success: (res) =>
                 {
-                    console.log(res);
+                    lat = data[x].latitude;
+                    lon = data[x].longitude;
+
                     coordinates.push(new Coordinate(lat, lon, res));
                     // ex: coordinates.push(new Coordinate(lat, lon, weather data extracted from res));
+
+                    gotten++;
+                    if(gotten === data.length)
+                        callback(coordinates);
                 }
             }); 
         }
-    });    
-
-    return coordinates;
+    });
 }
 
 class Coordinate
