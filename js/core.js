@@ -14,34 +14,40 @@ else
     alert('You are using a browser that is 10 years out of date. Stop it now.');
 }
 
-function run()
+// standard map
+let map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+route();
+
+function route()
 {
+    let direction = new google.maps.DirectionsService();
+    let renderer = new google.maps.DirectionsRenderer();
+    let request = {
+        origin: new google.maps.LatLng(userLocation.latitude, userLocation.longitude),
+        destination: "School",
+        travelMode: Driving,
+        provideRouteAlternatives: true,
+        avoidFerries: true,
+        avoidHighways: false,
+        avoidTolls: false,
+    };
+
+    direction.route(request, function(result, status)
+    {
+        if(status == "ok")
+        {
+            renderer.setDirections(result);
+        }
+    }
+);
+}
+
     // standard map
     let map = new google.maps.Map(document.getElementById("map-canvas"), 
     {
         zoom: 5,
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
-
-    // let direction = new DirectionsService();
-    // let renderer = new DirectionsRenderer();
-
-    // direction.route(new DirectionRequest(
-    //     {
-    //         origin: LatLng | String | google.maps.Place,
-    //         destination: "School",
-    //         travelMode: Driving,
-    //         provideRouteAlternatives: true,
-    //         avoidFerries: true,
-    //         avoidHighways: false,
-    //         avoidTolls: false,
-    //     }
-    // ),
-    // function(result, status)
-    //     {
-    //         console.log(result);
-    //     }
-    // );
 
     // heatmap layer
     heatmap = new HeatmapOverlay(map, 
