@@ -7,7 +7,7 @@
         <link rel="stylesheet" type="text/css" href="/css/styles.css" media="all" />
 
         <script src="js/jquery-min.js"></script>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true&libraries=places"></script>
         <script src="js/heatmap-min.js"></script>
         <script src="js/google-heat.js"></script>
         <script src="js/weather.js"></script>
@@ -29,23 +29,23 @@
             map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
             // heatmap layer
             heatmap = new HeatmapOverlay(map, 
-            {
-                // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-                "radius": 1,
-                "maxOpacity": 0.3, 
-                // scales the radius based on map zoom
-                "scaleRadius": true, 
-                // if set to false the heatmap uses the global maximum for colorization
-                // if activated: uses the data maximum within the current map boundaries 
-                //   (there will always be a red spot with useLocalExtremas true)
-                "useLocalExtrema": true,
-                // which field name in your data represents the latitude - default "lat"
-                latField: 'lat',
-                // which field name in your data represents the longitude - default "lng"
-                lngField: 'lng',
-                // which field name in your data represents the data value - default "value"
-                valueField: 'count'
-            }
+                {
+                    // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+                    "radius": 0.35,
+                    "maxOpacity": 0.3, 
+                    // scales the radius based on map zoom
+                    "scaleRadius": true, 
+                    // if set to false the heatmap uses the global maximum for colorization
+                    // if activated: uses the data maximum within the current map boundaries 
+                    //   (there will always be a red spot with useLocalExtremas true)
+                    "useLocalExtrema": true,
+                    // which field name in your data represents the latitude - default "lat"
+                    latField: 'lat',
+                    // which field name in your data represents the longitude - default "lng"
+                    lngField: 'lng',
+                    // which field name in your data represents the data value - default "value"
+                    valueField: 'count'
+                }
             );
 
             let testData =
@@ -66,17 +66,49 @@
                 }
 
                 heatmap.setData(testData);
+                
+                if (navigator.geolocation)
+                {
+                    navigator.geolocation.getCurrentPosition((position) =>
+                    {
+                        if(position)
+                        {
+                            searchSchools(position, (data) =>
+                            {
+                                console.log(data);
+                            });
+                        }
+                    });
+                }
+                else
+                {
+                    alert("Geolocation is not supported by this browser. Stop using internet explorer.");
+                }
             });
 
             function isDanger(data)
             {
                 if(data.precipType === "rain")
                 {
-                    if(data.precipIntensity > 0.1)
+                    if(data.precipIntensity > 0.098)
                         return true;
                 }
+                else if(data.precipType === "snow")
+                {
+
+                }
                 return false;
-                // return data.;
+            }
+
+            function searchSchools(pos, callback)
+            {
+                infowindow = new google.maps.InfoWindow(document.getElementById('map-canvas'));
+                var service = new google.maps.places.PlacesService('map-canvas');
+                service.nearbySearch({
+                location: pos,
+                radius: 500,
+                type: ['school']
+                }, callback);
             }
         </script>
     </body>
