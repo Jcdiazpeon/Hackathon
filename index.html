@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <title>Googlemaps Heatmap Layer</title>
-    <style>
-      html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0; font-family:sans-serif; }
-      #map-canvas { height: 100% }
-      h1 { position:absolute; background:black; color:white; padding:10px; font-weight:200; z-index:10000;}
-      #all-examples-info { position:absolute; background:white; font-size:16px; padding:20px; bottom:20px; width:350px; line-height:150%; border:1px solid rgba(0,0,0,.2);}
-    </style>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script src="/build/heatmap.js"></script>
-    <script src="/plugins/gmaps-heatmap/gmaps-heatmap.js"></script>
-  </head>
-  <body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <title>Whack Weather</title>
+        <link rel="style" href="/css/styles.css" media="all" />
+        <style>
+        html { height: 100% }
+        body { height: 100%; margin: 0; padding: 0; font-family:sans-serif; }
+        #map-canvas { height: 100% }
+        h1 { position:absolute; background:black; color:white; padding:10px; font-weight:200; z-index:10000;}
+        #all-examples-info { position:absolute; background:white; font-size:16px; padding:20px; bottom:20px; width:350px; line-height:150%; border:1px solid rgba(0,0,0,.2);}
+        </style>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script src="/heatmap-min.js"></script>
+        <script src="/google-heat.js"></script>
+    </head>
+    <body>
     <h1>Whack Weather</h1>
     <div id="map-canvas"></div>
     
@@ -55,8 +56,7 @@
           data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
         };
 
-        heatmap.setData(testData);
-
-</script>
-  </body>
+            heatmap.setData(testData);
+        </script>
+    </body>
 </html>
