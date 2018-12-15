@@ -1,6 +1,6 @@
 function getCoordinates(callback)
 {
-    const API_KEY = '19f72ad7d0e5911653d8e37df08280d7';
+    const API_KEY = '100b1072bf73f47d079357f3f54c9d01';
 
     // Fill coordinates
     $.getJSON('/data/counties.json', function(data)
