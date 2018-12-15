@@ -8,9 +8,9 @@
 
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="/js/heatmap-min.js"></script>
-        <script src="/js/google-heat.js"></script>
-        <script src="/js/weather.js"></script>
+        <script src="js/heatmap-min.js"></script>
+        <script src="js/google-heat.js"></script>
+        <script src="js/weather.js"></script>
     </head>
     <body>
     <h1>Whack Weather</h1>
@@ -49,13 +49,19 @@
 
         var testData = {
           max: 8,
-          data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
+          data: []
+          // data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
         };
-
-            heatmap.setData(testData);
 
             let coords = getCoordinates();
             console.log(coords);
+
+            for(let i = 0; i < coords.length; i++)
+            {
+              testData.data.push(coords[i].data);
+            }
+
+            heatmap.setData(testData);
         </script>
     </body>
 </html>
