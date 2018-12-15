@@ -23,6 +23,26 @@ function run()
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
 
+    let direction = new DirectionsService();
+    let renderer = new DirectionsRenderer();
+
+    direction.route(new DirectionRequest(
+        {
+            origin: LatLng | String | google.maps.Place,
+            destination: "School",
+            travelMode: Driving,
+            provideRouteAlternatives: true,
+            avoidFerries: true,
+            avoidHighways: false,
+            avoidTolls: false,
+        }
+    ),
+    function(result, status)
+        {
+            console.log(result);
+        }
+    );
+
     // heatmap layer
     heatmap = new HeatmapOverlay(map, 
     {
