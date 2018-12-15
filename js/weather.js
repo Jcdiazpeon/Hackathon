@@ -1,6 +1,6 @@
 function getCoordinates(callback)
 {
-    const API_KEY = 'e2848e12b7d6c4b0595889bcc8b3096b';
+    const API_KEY = '574001b846a8ed29b62f78b828d78d66';
     let debug = false;
 
     if(debug)
