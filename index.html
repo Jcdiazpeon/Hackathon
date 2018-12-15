@@ -6,62 +6,64 @@
         <title>Whack Weather</title>
         <link rel="stylesheet" type="text/css" href="/css/styles.css" media="all" />
 
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="js/jquery-min.js"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="js/heatmap-min.js"></script>
         <script src="js/google-heat.js"></script>
         <script src="js/weather.js"></script>
     </head>
     <body>
-    <h1>Whack Weather</h1>
-    <div id="map-canvas"></div>
-    
-    <script>
-        // map center
-        var myLatlng = new google.maps.LatLng(39.0522, -100.2437);
-        // map options,
-        var myOptions = {
-          zoom: 4,
-          center: myLatlng
-        };
-        // standard map
-        map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-        // heatmap layer
-        heatmap = new HeatmapOverlay(map, 
-          {
-            // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-            "radius": 2,
-            "maxOpacity": 1, 
-            // scales the radius based on map zoom
-            "scaleRadius": true, 
-            // if set to false the heatmap uses the global maximum for colorization
-            // if activated: uses the data maximum within the current map boundaries 
-            //   (there will always be a red spot with useLocalExtremas true)
-            "useLocalExtrema": true,
-            // which field name in your data represents the latitude - default "lat"
-            latField: 'lat',
-            // which field name in your data represents the longitude - default "lng"
-            lngField: 'lng',
-            // which field name in your data represents the data value - default "value"
-            valueField: 'count'
-          }
-        );
-
-        var testData = {
-          max: 8,
-          data: []
-          // data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
-        };
-
-            let coords = getCoordinates();
-            console.log(coords);
-
-            for(let i = 0; i < coords.length; i++)
+        <h1>Whack Weather</h1>
+        <div id="map-canvas"></div>
+        
+        <script>
+            // map center
+            var myLatlng = new google.maps.LatLng(39.0522, -100.2437);
+            // map options,
+            var myOptions = {
+            zoom: 4,
+            center: myLatlng
+            };
+            // standard map
+            map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+            // heatmap layer
+            heatmap = new HeatmapOverlay(map, 
             {
-              testData.data.push(coords[i].data);
+                // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+                "radius": 1,
+                "maxOpacity": 0.5, 
+                // scales the radius based on map zoom
+                "scaleRadius": true, 
+                // if set to false the heatmap uses the global maximum for colorization
+                // if activated: uses the data maximum within the current map boundaries 
+                //   (there will always be a red spot with useLocalExtremas true)
+                "useLocalExtrema": true,
+                // which field name in your data represents the latitude - default "lat"
+                latField: 'lat',
+                // which field name in your data represents the longitude - default "lng"
+                lngField: 'lng',
+                // which field name in your data represents the data value - default "value"
+                valueField: 'count'
             }
+            );
 
-            heatmap.setData(testData);
+            let testData =
+            {
+                max: 8,
+                data: []
+                // data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
+            };
+
+            getCoordinates(function(coords)
+            {
+                for(let i = 0; i < coords.length; i++)
+                {
+                    console.log(coords[i].lat + ',' + coords[i].lon)
+                    testData.data.push({lat: coords[i].lat, lng: coords[i].lon, count: 1});
+                }
+
+                heatmap.setData(testData);
+            });
         </script>
     </body>
 </html>
