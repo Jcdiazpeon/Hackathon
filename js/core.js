@@ -14,10 +14,6 @@ else
     alert('You are using a browser that is 10 years out of date. Stop it now.');
 }
 
-// standard map
-let map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-route();
-
 function route()
 {
     let direction = new google.maps.DirectionsService();
@@ -25,7 +21,7 @@ function route()
     let request = {
         origin: new google.maps.LatLng(userLocation.latitude, userLocation.longitude),
         destination: "School",
-        travelMode: Driving,
+        travelMode: "DRIVING",
         provideRouteAlternatives: true,
         avoidFerries: true,
         avoidHighways: false,
@@ -38,16 +34,19 @@ function route()
         {
             renderer.setDirections(result);
         }
-    }
-);
+    });
 }
 
+function run()
+{
     // standard map
     let map = new google.maps.Map(document.getElementById("map-canvas"), 
     {
         zoom: 5,
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
+    
+    route();
 
     // heatmap layer
     heatmap = new HeatmapOverlay(map, 
@@ -159,15 +158,18 @@ windSpeed: 5.67
 
             */
 
-            console.log(c.data.currently.summary.includes(options.precipitationType));
-            if(!(options.precip && c.data.currently.summary.includes(options.precipitationType)))
-            {
+            if(options.precipitationType && !(c.data.currently.summary.toLowerCase().includes(options.precipitationType)))
                 continue;
-            }
-            if(!(options.precipAmt && options.precipAmount <= c.data.currently.precipAmount))
+            if(options.precipAmount && !(options.precipAmount <= c.data.currently.precipAmount))
+                continue;
+            if(options.windSpeed && !(options.windSpeed <= c.data.currently.windSpeed))
+                continue;
+            if(options.visibility && !(options.visibilityPercent <= c.data.currently.visibility))
+                continue;
+            if(options.humidity && !(options.humidityPercent <= c.data.currently.humidity))
                 continue;
             
-            console.log(c);
+            console.log(c.data);
             slap(c);
         }
     }
@@ -179,8 +181,22 @@ $("#weatherDataForm").submit(e =>
 {
     e.preventDefault();
 
+/*
+<label>Wind Speed (km/h)</label>
+                    <input type="number" id="windSpeed" />
+
+                    <label>Visibility %</label>
+                    <input type="number" id="visibilityPercent" />
+
+                    <label>Humidity %</label>
+                    <input type="number" id="humidityPercent" />
+*/
+
     let precip = $('#precip').val();
     let precipAmt = $('#precipPercent').val();
+    let windSpeed = $('#windSpeed').val();
+    let visibilityPercent = $('#visibilityPercent').val();
+    let humidityPercent = $('#humidityPercent').val();
     let danger = $('#danger').prop('checked');
 
     console.log(precipAmt / 100)
@@ -189,7 +205,10 @@ $("#weatherDataForm").submit(e =>
         {
             precipitationType: precip.toLowerCase(),
             precipAmount: precipAmt / 100,
-            danger: danger
+            danger: danger,
+            windSpeed: windSpeed,
+            visibilityPercent: visibilityPercent / 100,
+            humidityPercent: humidityPercent / 100
         });
 
     return false;
