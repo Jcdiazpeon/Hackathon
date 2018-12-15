@@ -5,6 +5,11 @@ function getCoordinates()
     let coordinates = [];
 
     // Fill coordinates
+    $.getJSON('/data/counties.json', function(data)
+    {
+        console.log(data);
+    });    
+
     let url = `https://api.darksky.net/forecast/${API_KEY}`;
 
     let lat, lon;
