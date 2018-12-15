@@ -55,7 +55,7 @@ class Coordinate
     constructor(x, y, data)
     {
         this.lat = x;
-        this.y = y;
+        this.lon = y;
         this.data = data;
     }
 }
