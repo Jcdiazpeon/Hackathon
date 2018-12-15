@@ -2,7 +2,7 @@
 
 function getCoordinates()
 {
-    const API_KEY = 'b0d48880090d49e9dcc76306507a83b6';
+    const API_KEY = '19f72ad7d0e5911653d8e37df08280d7';
 
     let coordinates = [];
 
