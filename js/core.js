@@ -1,9 +1,22 @@
-let weatherCoordinates;
+let weatherCoordinates, location;
+
+if (navigator.geolocation)
+{
+    navigator.geolocation.getCurrentPosition(pos =>
+    {
+        location = pos.coords;
+    });
+}
+else
+{
+    alert('You are using a browser that is 10 years out of date. Stop it now.');
+    location = {latitude: 40, longitude: -70};
+}
 
 let myOptions =
 {
     zoom: 5,
-    center: new google.maps.LatLng(40, -70)
+    center: new google.maps.LatLng(location)
 };
 
 // standard map
@@ -33,24 +46,6 @@ getCoordinates(function(coords)
 {
     weatherCoordinates = coords;
     fillHeatmap();
-    
-    // if (navigator.geolocation)
-    // {
-    //     navigator.geolocation.getCurrentPosition((position) =>
-    //     {
-    //         if(position)
-    //         {
-    //             searchSchools(position, (data) =>
-    //             {
-    //                 console.log(data);
-    //             });
-    //         }
-    //     });
-    // }
-    // else
-    // {
-    //     alert("Geolocation is not supported by this browser. Stop using internet explorer.");
-    // }
 });
 
 function isDanger(data)
@@ -67,34 +62,64 @@ function isDanger(data)
     return false;
 }
 
-// function searchSchools(pos, callback)
-// {
-//     infowindow = new google.maps.InfoWindow(document.getElementById('map-canvas'));
-//     var service = new google.maps.places.PlacesService('map-canvas');
-//     service.nearbySearch({
-//     location: pos,
-//     radius: 500,
-//     type: ['school']
-//     }, callback);
-// }
-
 function fillHeatmap(options)
 {
+    heatmap.setData({data:[]});
+
     let dataToFill =
     {
         max: 1,
         data: []
     };
 
-    if(!options)
+    let slap = function(c)
     {
-        for(let i = 0; i < coords.length; i++)
-            if(isDanger(coords[i].data.currently))
-                dataToFill.data.push({lat: coords[i].lat, lng: coords[i].lon, count: 1});
+        dataToFill.data.push({lat: c.lat, lng: c.lon, count: 1});
     }
-    else
+
+    for(let i = 0; i < weatherCoordinates.length; i++)
     {
-        
+        if(!options || options.danger)
+        {
+            if(isDanger(weatherCoordinates[i].data.currently))
+                slap(weatherCoordinates[i]);
+        }
+        else
+        {
+            let c = weatherCoordinates[i];
+
+            console.log(c);
+
+            /*
+apparentTemperature: 40.11
+cloudCover: 0.24
+dewPoint: 36.94
+humidity: 0.78
+icon: "clear-day"
+nearestStormDistance: 0
+ozone: 294.56
+precipIntensity: 0
+precipProbability: 0
+pressure: 1020.73
+summary: "Clear"
+temperature: 43.42
+time: 1544903566
+uvIndex: 0
+visibility: 10
+windBearing: 47
+windGust: 6.54
+windSpeed: 5.56
+            */
+
+            if(options.precip && toLower(c.data.currently.summary).contains(toLower(options.precip)))
+                continue;
+            if(options.precipAmt && options.precipAmount <= c.data.currently.precipIntensity)
+                continue;
+            if(options.precip && options.precip !== c.data.currently.precipIntensity)
+                continue;
+            
+            slap(c);
+        }
     }
 
     heatmap.setData(dataToFill);
@@ -108,10 +133,12 @@ $("#weatherDataForm").submit(e =>
     let precipAmt = $('#precipPercent').val();
     let danger = $('#danger').prop('checked');
 
+    console.log(precipAmt / 100)
+
     fillHeatmap(
         {
             precipitationType: precip,
-            precipAmount: precipAmt ? precipAmt / 100 : null,
+            precipAmount: precipAmt / 100,
             danger: danger
         });
 
