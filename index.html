@@ -49,13 +49,19 @@
 
         var testData = {
           max: 8,
-          data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
+          data: []
+          // data: [{lat: 24.6408, lng:46.7728, count: 3}, {lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1}]
         };
-
-            heatmap.setData(testData);
 
             let coords = getCoordinates();
             console.log(coords);
+
+            for(let i = 0; i < coords.length; i++)
+            {
+              testData.data.push(coords[i].data);
+            }
+
+            heatmap.setData(testData);
         </script>
     </body>
 </html>
