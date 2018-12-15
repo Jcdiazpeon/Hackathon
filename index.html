@@ -20,9 +20,10 @@
             // map center
             var myLatlng = new google.maps.LatLng(39.0522, -100.2437);
             // map options,
-            var myOptions = {
-            zoom: 4,
-            center: myLatlng
+            var myOptions =
+            {
+                zoom: 5,
+                center: myLatlng
             };
             // standard map
             map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
@@ -31,7 +32,7 @@
             {
                 // radius should be small ONLY if scaleRadius is true (or small radius is intended)
                 "radius": 1,
-                "maxOpacity": 0.5, 
+                "maxOpacity": 0.3, 
                 // scales the radius based on map zoom
                 "scaleRadius": true, 
                 // if set to false the heatmap uses the global maximum for colorization
@@ -58,12 +59,25 @@
             {
                 for(let i = 0; i < coords.length; i++)
                 {
-                    console.log(coords[i].lat + ',' + coords[i].lon)
-                    testData.data.push({lat: coords[i].lat, lng: coords[i].lon, count: 1});
+                    // console.log(coords[i].currently);
+
+                    if(isDanger(coords[i].data.currently))
+                        testData.data.push({lat: coords[i].lat, lng: coords[i].lon, count: 1});
                 }
 
                 heatmap.setData(testData);
             });
+
+            function isDanger(data)
+            {
+                if(data.precipType === "rain")
+                {
+                    if(data.precipIntensity > 0.1)
+                        return true;
+                }
+                return false;
+                // return data.;
+            }
         </script>
     </body>
 </html>
