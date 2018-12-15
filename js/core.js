@@ -49,7 +49,6 @@ function route()
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
 
-
     // heatmap layer
     heatmap = new HeatmapOverlay(map, 
     {
@@ -117,8 +116,6 @@ function fillHeatmap(options)
         {
             let c = weatherCoordinates[i];
 
-            console.log(c);
-
             /*
 apparentTemperature: 40.11
 cloudCover: 0.24
@@ -162,12 +159,15 @@ windSpeed: 5.67
 
             */
 
-            console.log(options);
-            if(options.precip && toLower(c.data.currently.summary).contains(toLower(options.precipitationType)))
+            console.log(c.data.currently.summary.includes(options.precipitationType));
+            if(!(options.precip && c.data.currently.summary.includes(options.precipitationType)))
+            {
                 continue;
-            if(options.precipAmt && options.precipAmount <= c.data.currently.precipAmount)
+            }
+            if(!(options.precipAmt && options.precipAmount <= c.data.currently.precipAmount))
                 continue;
             
+            console.log(c);
             slap(c);
         }
     }
@@ -187,7 +187,7 @@ $("#weatherDataForm").submit(e =>
 
     fillHeatmap(
         {
-            precipitationType: precip,
+            precipitationType: precip.toLowerCase(),
             precipAmount: precipAmt / 100,
             danger: danger
         });
