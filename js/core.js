@@ -1,28 +1,30 @@
-let weatherCoordinates, location;
+let weatherCoordinates, userLocation,
+    heatmap;
 
 if (navigator.geolocation)
 {
     navigator.geolocation.getCurrentPosition(pos =>
     {
-        location = pos.coords;
+        userLocation = pos.coords;
+        run();
     });
 }
 else
 {
     alert('You are using a browser that is 10 years out of date. Stop it now.');
-    location = {latitude: 40, longitude: -70};
 }
 
-let myOptions =
+function run()
 {
-    zoom: 5,
-    center: new google.maps.LatLng(location)
-};
+    // standard map
+    let map = new google.maps.Map(document.getElementById("map-canvas"), 
+    {
+        zoom: 5,
+        center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
+    });
 
-// standard map
-let map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-// heatmap layer
-let heatmap = new HeatmapOverlay(map, 
+    // heatmap layer
+    heatmap = new HeatmapOverlay(map, 
     {
         // radius should be small ONLY if scaleRadius is true (or small radius is intended)
         "radius": 0.35,
@@ -39,14 +41,14 @@ let heatmap = new HeatmapOverlay(map,
         lngField: 'lng',
         // which field name in your data represents the data value - default "value"
         valueField: 'count'
-    }
-);
+    });
 
-getCoordinates(function(coords)
-{
-    weatherCoordinates = coords;
-    fillHeatmap();
-});
+    getCoordinates(function(coords)
+    {
+        weatherCoordinates = coords;
+        fillHeatmap();
+    });
+}
 
 function isDanger(data)
 {
@@ -109,13 +111,34 @@ visibility: 10
 windBearing: 47
 windGust: 6.54
 windSpeed: 5.56
+
+apparentTemperature: 44.88
+cloudCover: 0.94
+dewPoint: 45.17
+humidity: 0.92
+icon: "rain"
+nearestStormDistance: 0
+ozone: 298.42
+precipIntensity: 0.0723
+precipIntensityError: 0.014
+precipProbability: 1
+precipType: "rain"
+pressure: 1016.47
+summary: "Rain"
+temperature: 47.5
+time: 1544903564
+uvIndex: 1
+visibility: 5.56
+windBearing: 63
+windGust: 8.34
+windSpeed: 5.67
+
             */
 
-            if(options.precip && toLower(c.data.currently.summary).contains(toLower(options.precip)))
+            console.log(options);
+            if(options.precip && toLower(c.data.currently.summary).contains(toLower(options.precipitationType)))
                 continue;
-            if(options.precipAmt && options.precipAmount <= c.data.currently.precipIntensity)
-                continue;
-            if(options.precip && options.precip !== c.data.currently.precipIntensity)
+            if(options.precipAmt && options.precipAmount <= c.data.currently.precipAmount)
                 continue;
             
             slap(c);
