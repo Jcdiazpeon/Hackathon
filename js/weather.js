@@ -1,6 +1,6 @@
 function getCoordinates(callback)
 {
-    const API_KEY = '6633d2dd94cf272ff37b5aac59b3667c';
+    const API_KEY = '928d04e30fff4119841f12df9c1f0709';
 
     // Fill coordinates
     $.getJSON('/data/counties.json', function(data)
@@ -28,7 +28,7 @@ function getCoordinates(callback)
                     lat = data[x].latitude;
                     lon = data[x].longitude;
 
-                    coordinates.push(new Coordinate(lat, lon, res));
+                    coordinates.push(new Coordinate(lat, lon, res, data[x].name));
 
                     gotten++;
                     if(gotten === data.length)
@@ -43,10 +43,11 @@ function getCoordinates(callback)
 
 class Coordinate
 {
-    constructor(x, y, data)
+    constructor(x, y, data, name)
     {
         this.lat = x;
         this.lon = y;
         this.data = data;
+        this.name = name;
     }
 }

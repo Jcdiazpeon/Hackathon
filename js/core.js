@@ -1,6 +1,8 @@
 let weatherCoordinates, userLocation,
     heatmap;
 
+let reasons = [];
+
 if (navigator.geolocation)
 {
     navigator.geolocation.getCurrentPosition(pos =>
@@ -50,18 +52,40 @@ function run()
     });
 }
 
-function isDanger(data)
+function isDanger(coordData, showReasoning)
 {
-    if(data.precipitationType === "rain" && data.precipIntensity > 10)
+    let data = coordData.data.currently;
+
+    if(data.precipType === "rain" && data.precipIntensity > 4) // In reality this would be like 20 but for showcasing we made it really low
+    {
+        if(showReasoning)
+            reasons.push({name: coordData.name, why: `The rain has an intensity of ${data.precipIntensity} mm/hr`});
         return true;
-    else if(data.precipitationType === "snow" && data.precipIntensity > 4)
+    }
+    else if(data.precipType === "snow" && data.precipIntensity > 8)
+    {
+        if(showReasoning)
+            reasons.push({name: coordData.name, why: `The snow has an intensity of ${data.precipIntensity} mm/hr`});
         return true;
-    else if(data.precipitationType === 'sleet' || data.precipitationType === 'hail')
+    }
+    else if(data.precipType === 'sleet' || data.precipType === 'hail')
+    {
+        if(showReasoning)
+            reasons.push({name: coordData.name, why: `It's ${data.precipType}ing.`});
         return true;
-    else if(data.windSpeed > 50)
+    }
+    else if(data.windSpeed > 20)
+    {
+        if(showReasoning)
+            reasons.push({name: coordData.name, why: `The wind has an speed of ${data.windSpeed} m/s`});
         return true;
+    }
     else if(data.visibility < 6)
+    {
+        if(showReasoning)
+            reasons.push({name: coordData.name, why: `The visibility is only ${data.visibility} km`});
         return true;
+    }
 
     return false;
 }
@@ -76,18 +100,16 @@ function fillHeatmap(options)
         data: []
     };
 
-    let slap = function(c)
+    const slap = function(c)
     {
         dataToFill.data.push({lat: c.lat, lng: c.lon, count: 1});
     }
-
-    console.log(weatherCoordinates);
 
     for(let i = 0; i < weatherCoordinates.length; i++)
     {
         if(!options || options.danger)
         {
-            if(isDanger(weatherCoordinates[i].data.currently))
+            if(isDanger(weatherCoordinates[i], true))
                 slap(weatherCoordinates[i]);
         }
         else
@@ -106,8 +128,7 @@ function fillHeatmap(options)
                 continue;
             if(options.humidityPercent && !(options.humidityPercent <= c.data.currently.humidity))
                 continue;
-            
-            console.log(c.data);
+
             slap(c);
         }
     }
@@ -138,3 +159,18 @@ $("#weatherDataForm").submit(e =>
 
     return false;
 });
+
+function giveReasoning()
+{
+    if(reasons.length > 0)
+    {
+        let msg = 'Reasons counties are dangerous';
+        reasons.forEach(r =>
+        {
+            msg += '\n' + r.name + ': ' + r.why;
+        });
+        alert(msg);
+    }
+    else
+        alert('No counties are dangerous.');
+}
