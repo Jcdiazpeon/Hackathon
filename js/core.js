@@ -118,8 +118,16 @@ function fillHeatmap(options)
 
             let c = weatherCoordinates[i];
 
-            if(options.precipitationType && !(c.data.currently.summary.toLowerCase().includes(options.precipitationType)))
-                continue;
+            if(options.precipitationType)
+            {
+                if(!(options.precipitationType.toLowerCase() === 'cloudy' && c.data.currently.summary.toLowerCase().includes('overcast')))
+                {
+                    if(!(c.data.currently.summary.toLowerCase().includes(options.precipitationType.toLowerCase())))
+                    {
+                        continue;
+                    }
+                }
+            }
             if(options.precipIntensity && !(options.precipIntensity <= c.data.currently.precipIntensity))
                 continue;
             if(options.windSpeed && !(options.windSpeed <= c.data.currently.windSpeed))
