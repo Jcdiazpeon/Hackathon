@@ -1,9 +1,13 @@
+/**
+ * Gets all the weather data for all the coordinates required
+ * @param {Function} callback The function to call with the coordinates found as the first argument once everything has been loaded
+ */
 function getCoordinates(callback)
 {
     const API_KEY = '928d04e30fff4119841f12df9c1f0709';
 
     // Fill coordinates
-    $.getJSON('/data/cities_clean.json', function(data)
+    $.getJSON('/data/counties.json', function(data)
     {
         let coordinates = [];
 
@@ -41,6 +45,9 @@ function getCoordinates(callback)
     });
 }
 
+/**
+ * A simple object that stores 4 variables
+ */
 class Coordinate
 {
     constructor(x, y, data, name)

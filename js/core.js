@@ -3,6 +3,7 @@ let weatherCoordinates, userLocation,
 
 let reasons = [];
 
+// Gets the user's location using geolocation
 if (navigator.geolocation)
 {
     navigator.geolocation.getCurrentPosition(pos =>
@@ -18,14 +19,14 @@ else
 
 function run()
 {
-    // standard map
+    // Create a google map
     let map = new google.maps.Map(document.getElementById("map-canvas"), 
     {
         zoom: 5,
         center: new google.maps.LatLng(userLocation.latitude, userLocation.longitude)
     });
 
-    // heatmap layer
+    // Add heatmap layer
     heatmap = new HeatmapOverlay(map, 
     {
         // radius should be small ONLY if scaleRadius is true (or small radius is intended)
@@ -52,6 +53,12 @@ function run()
     });
 }
 
+/**
+ * Decides if a coordinate is dangerous or not
+ * @param {object} coordData The coordinate data to use
+ * @param {boolean} showReasoning If it should add the reasoning to the reasoning list
+ * @returns true if dangerous conditions, false if not
+ */
 function isDanger(coordData, showReasoning)
 {
     let data = coordData.data.currently;
@@ -90,6 +97,10 @@ function isDanger(coordData, showReasoning)
     return false;
 }
 
+/**
+ * Fills the heatmap based off the options provided
+ * @param {object} options Options to decide which coordinates are shown
+ */
 function fillHeatmap(options)
 {
     heatmap.setData({data:[]});
@@ -144,6 +155,7 @@ function fillHeatmap(options)
     heatmap.setData(dataToFill);
 }
 
+// Overrides the browser's default reload page on form submission and handles the data
 $("#weatherDataForm").submit(e =>
 {
     e.preventDefault();
@@ -168,6 +180,9 @@ $("#weatherDataForm").submit(e =>
     return false;
 });
 
+/**
+ * Shows the reasons for each point that was bad
+ */
 function giveReasoning()
 {
     if(reasons.length > 0)
