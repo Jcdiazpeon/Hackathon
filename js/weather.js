@@ -3,7 +3,7 @@ function getCoordinates(callback)
     const API_KEY = '928d04e30fff4119841f12df9c1f0709';
 
     // Fill coordinates
-    $.getJSON('/data/counties.json', function(data)
+    $.getJSON('/data/cities_clean.json', function(data)
     {
         let coordinates = [];
 
